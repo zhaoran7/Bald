@@ -1,0 +1,9 @@
+data/gwas/*
+!data/gwas/.gitkeep
+res/
+jobs/
+*.log
+*.nosex
+*.ld
+*.pptx
+*.pdf
