@@ -44,7 +44,7 @@ data/lead/<trait>.lead.tsv
 res/risk.tsv
 ```
 
-`res/risk.tsv` 中 risk allele 的定义为：`BETA >= 0` 取 effect allele，`BETA < 0` 取 non-effect allele。
+`data/lead/<trait>.lead.tsv` 使用 `jma.cojo` 中的 hg19 lead 坐标；`res/risk.tsv` 按 SNP ID 从 GWAS 读取效应方向，不要求 GWAS 的 POS 与 COJO 的 hg19 POS 一致。risk allele 的定义为：`BETA >= 0` 取 effect allele，`BETA < 0` 取 non-effect allele。
 
 ### s1. 计算 lead SNP 的高 LD core region
 

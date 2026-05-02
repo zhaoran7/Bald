@@ -6,8 +6,9 @@ onekg=$root/1kg
 vindija=$root/Vindija
 altai=$root/Altai
 chagyr=$root/Chagyr
+denisova=$root/Denisova
 
-mkdir -p "$onekg" "$vindija" "$altai" "$chagyr"
+mkdir -p "$onekg" "$vindija" "$altai" "$chagyr" "$denisova"
 
 get_one () {
   local url=$1
@@ -41,7 +42,7 @@ ok_vcf_bgz () {
   return 0
 }
 
-echo "[1/5] 1000G v5a"
+echo "[1/6] 1000G v5a"
 for c in $(seq 1 22); do
   vcf="$onekg/ALL.chr${c}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
   tbi="${vcf}.tbi"
@@ -71,7 +72,7 @@ else
     "$panel"
 fi
 
-echo "[2/5] Vindija"
+echo "[2/6] Vindija"
 for c in $(seq 1 22); do
   vcf="$vindija/chr${c}_mq25_mapab100.vcf.gz"
   tbi="${vcf}.tbi"
@@ -90,7 +91,7 @@ for c in $(seq 1 22); do
   fi
 done
 
-echo "[3/5] Altai"
+echo "[3/6] Altai"
 for c in $(seq 1 22); do
   vcf="$altai/chr${c}_mq25_mapab100.vcf.gz"
   tbi="${vcf}.tbi"
@@ -109,7 +110,7 @@ for c in $(seq 1 22); do
   fi
 done
 
-echo "[4/5] Chagyr"
+echo "[4/6] Chagyr"
 for c in $(seq 1 22); do
   raw="$chagyr/chr${c}.noRB.vcf.gz"
   raw_tbi="${raw}.tbi"
@@ -134,7 +135,26 @@ for c in $(seq 1 22); do
   fi
 done
 
-echo "[5/5] quick check chr3 lead SNP"
+echo "[5/6] Denisova"
+for c in $(seq 1 22); do
+  vcf="$denisova/chr${c}_mq25_mapab100.vcf.gz"
+  tbi="${vcf}.tbi"
+  if ok_vcf_bgz "$vcf" "$tbi"; then
+    echo "[OK] Denisova chr${c}"
+  else
+    echo "[GET] Denisova chr${c}"
+    rm -f "$vcf" "$tbi"
+    get_one \
+      "https://cdna.eva.mpg.de/neandertal/Vindija/VCF/Denisova/chr${c}_mq25_mapab100.vcf.gz" \
+      "$vcf"
+    get_one \
+      "https://cdna.eva.mpg.de/neandertal/Vindija/VCF/Denisova/chr${c}_mq25_mapab100.vcf.gz.tbi" \
+      "$tbi"
+    ok_vcf_bgz "$vcf" "$tbi"
+  fi
+done
+
+echo "[6/6] quick check chr3 lead SNP"
 bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\n' \
   "$onekg/ALL.chr3.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz" \
 | awk '$3=="rs35044562"{print "[OK] rs35044562\t"$0; found=1} END{if(!found) print "[WARN] rs35044562 not found"}'
